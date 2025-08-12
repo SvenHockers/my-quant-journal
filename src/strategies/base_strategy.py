@@ -4,13 +4,12 @@ Provides common functionality and interface for strategy implementations.
 """
 
 import backtrader as bt
-from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 
-class BaseStrategy(bt.Strategy, ABC):
+class BaseStrategy(bt.Strategy):
     """
-    Abstract base class for all trading strategies.
+    Base class for all trading strategies.
     Implements common functionality and defines required interface.
     """
     
@@ -20,21 +19,12 @@ class BaseStrategy(bt.Strategy, ABC):
         self.buyprice = None
         self.buycomm = None
         
-        # Strategy parameters
-        self.params = self.get_strategy_params()
-        
         # Performance tracking
         self.trades = []
         self.equity_curve = []
     
-    @abstractmethod
-    def get_strategy_params(self) -> Dict[str, Any]:
-        """Return strategy parameters. Must be implemented by subclasses."""
-        pass
-    
-    @abstractmethod
     def next(self):
-        """Main strategy logic. Must be implemented by subclasses."""
+        """Main strategy logic. Should be implemented by subclasses."""
         pass
     
     def notify_order(self, order):

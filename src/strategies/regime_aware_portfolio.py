@@ -26,11 +26,20 @@ class RegimeAwarePortfolioStrategy(BaseStrategy):
     penalizing excessive turnover.
     """
     
+    # Define strategy parameters using Backtrader's parameter system
+    params = (
+        ('hazard_rate', 0.01),           # Prior probability of regime change
+        ('change_point_threshold', 0.5),  # Threshold for declaring change point
+        ('max_window_length', 252),       # Maximum estimation window (1 year)
+        ('risk_aversion', 2.0),          # Risk aversion parameter λ
+        ('turnover_penalty', 0.001),     # Turnover penalty κ
+        ('min_weight', 0.0),             # Minimum portfolio weight
+        ('max_weight', 0.3),             # Maximum portfolio weight
+        ('rebalance_frequency', 5)       # Rebalance every N days
+    )
+    
     def __init__(self):
         super().__init__()
-        
-        # Strategy parameters
-        self.params = self.get_strategy_params()
         
         # Initialize state variables
         self.portfolio_weights = None
@@ -38,30 +47,17 @@ class RegimeAwarePortfolioStrategy(BaseStrategy):
         self.estimated_covariance = None
         self.regime_start_time = 0
         self.run_length_posterior = None
-        self.hazard_rate = self.params['hazard_rate']
-        self.change_point_threshold = self.params['change_point_threshold']
-        self.max_window_length = self.params['max_window_length']
-        self.risk_aversion = self.params['risk_aversion']
-        self.turnover_penalty = self.params['turnover_penalty']
+        self.hazard_rate = self.params.hazard_rate
+        self.change_point_threshold = self.params.change_point_threshold
+        self.max_window_length = self.params.max_window_length
+        self.risk_aversion = self.params.risk_aversion
+        self.turnover_penalty = self.params.turnover_penalty
         
         # Performance tracking
         self.regime_changes = []
         self.surprise_scores = []
         self.learning_rates = []
         
-    def get_strategy_params(self) -> Dict[str, Any]:
-        """Return strategy parameters."""
-        return {
-            'hazard_rate': 0.01,           # Prior probability of regime change
-            'change_point_threshold': 0.5,  # Threshold for declaring change point
-            'max_window_length': 252,       # Maximum estimation window (1 year)
-            'risk_aversion': 2.0,          # Risk aversion parameter λ
-            'turnover_penalty': 0.001,     # Turnover penalty κ
-            'min_weight': 0.0,             # Minimum portfolio weight
-            'max_weight': 0.3,             # Maximum portfolio weight
-            'rebalance_frequency': 5       # Rebalance every N days
-        }
-    
     def next(self):
         """Main strategy logic executed at each time step."""
         if len(self) < 2:  # Need at least 2 data points
@@ -77,7 +73,7 @@ class RegimeAwarePortfolioStrategy(BaseStrategy):
         self._update_moment_estimates(current_returns)
         
         # Rebalance portfolio if needed
-        if len(self) % self.params['rebalance_frequency'] == 0:
+        if len(self) % self.params.rebalance_frequency == 0:
             self._rebalance_portfolio()
     
     def _calculate_returns(self) -> np.ndarray:
@@ -278,7 +274,7 @@ class RegimeAwarePortfolioStrategy(BaseStrategy):
         ]
         
         # Bounds
-        bounds = [(self.params['min_weight'], self.params['max_weight'])] * n_assets
+        bounds = [(self.params.min_weight, self.params.max_weight)] * n_assets
         
         # Initial guess
         x0 = current_weights

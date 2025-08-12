@@ -15,13 +15,12 @@ class SMACrossoverStrategy(BaseStrategy):
     Sell when fast SMA crosses below slow SMA
     """
     
-    def get_strategy_params(self) -> dict:
-        """Return strategy parameters."""
-        return {
-            'fast_period': 10,
-            'slow_period': 30,
-            'printlog': False
-        }
+    # Define strategy parameters using Backtrader's parameter system
+    params = (
+        ('fast_period', 10),
+        ('slow_period', 30),
+        ('printlog', False),
+    )
     
     def __init__(self):
         super().__init__()

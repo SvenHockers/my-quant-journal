@@ -92,11 +92,13 @@ def main():
         print(f"Regime Change Confidences: {[f'{c:.3f}' for c in strategy_metrics['regime_change_confidences']]}")
     
     # Performance metrics
-    if strategy_metrics['total_trades'] > 0:
+    if 'total_trades' in strategy_metrics and strategy_metrics['total_trades'] > 0:
         print(f"\nTrading Performance:")
         print(f"Total Trades: {strategy_metrics['total_trades']}")
-        print(f"Win Rate: {strategy_metrics['win_rate']:.2%}")
-        print(f"Average PnL per Trade: ${strategy_metrics['avg_pnl_per_trade']:.2f}")
+        print(f"Win Rate: {strategy_metrics.get('win_rate', 0):.2%}")
+        print(f"Average PnL per Trade: ${strategy_metrics.get('avg_pnl_per_trade', 0):.2f}")
+    else:
+        print(f"\nTrading Performance: No trades executed (portfolio strategy)")
     
     # Plot strategy analysis
     print("\nGenerating strategy analysis plots...")
