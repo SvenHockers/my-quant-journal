@@ -15,8 +15,13 @@ import pkgutil
 import importlib
 from pathlib import Path
 
-# Add src to path
-sys.path.append(str(Path(__file__).parent.parent / 'src'))
+# Ensure repository 'src' directory is on sys.path regardless of where this script resides
+CURRENT_FILE = Path(__file__).resolve()
+# This file is under <repo>/src/utils/run_backtest.py → repo root is parents[2]
+REPO_ROOT = CURRENT_FILE.parents[2]
+SRC_DIR = REPO_ROOT / 'src'
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
 from data.data_loader import DataLoader
 from backtesting.engine import BacktestEngine
