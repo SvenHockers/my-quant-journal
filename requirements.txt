@@ -8,7 +8,8 @@ seaborn>=0.11.0
 # Data fetching
 yfinance>=0.2.0
 
-# Additional utilities
+# Configuration and utilities
+PyYAML>=6.0.0
 scipy>=1.9.0
 scikit-learn>=1.1.0
 
