@@ -20,7 +20,8 @@ class BacktestEngine:
     def __init__(self, 
                  initial_cash: float = 100000.0,
                  commission: float = 0.0,
-                 output_dir: str = "results"):
+                 output_dir: str = "results",
+                 enable_pyfolio: bool = False):
         """
         Initialize backtesting engine.
         
@@ -33,6 +34,7 @@ class BacktestEngine:
         self.commission = commission
         self.output_dir = output_dir
         self.data_loader = DataLoader()
+        self.enable_pyfolio = enable_pyfolio
         
         # Create output directory
         os.makedirs(output_dir, exist_ok=True)
@@ -93,6 +95,11 @@ class BacktestEngine:
         self.cerebro.addanalyzer(bt.analyzers.DrawDown, _name='drawdown')
         self.cerebro.addanalyzer(bt.analyzers.Returns, _name='returns')
         self.cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='trades')
+        if self.enable_pyfolio:
+            try:
+                self.cerebro.addanalyzer(bt.analyzers.PyFolio, _name='pyfolio')
+            except Exception as e:
+                print(f"Warning: failed to add PyFolio analyzer: {e}")
 
         # Run backtest
         results = self.cerebro.run()
@@ -131,9 +138,23 @@ class BacktestEngine:
             'annual_return': annual_return,
             'trade_analysis': trade_analysis,
             'strategy_performance': getattr(strategy, 'get_performance_summary', lambda: {})(),
+            'has_pyfolio': bool(getattr(strategy.analyzers, 'pyfolio', None)) if self.enable_pyfolio else False,
         }
 
-        self.results[result_key] = {**summary, 'cerebro': self.cerebro, 'strategy': strategy}
+        pf_payload = {}
+        if self.enable_pyfolio and hasattr(strategy.analyzers, 'pyfolio'):
+            try:
+                returns, positions, transactions, gross_lev = strategy.analyzers.pyfolio.get_pf_items()
+                pf_payload = {
+                    'pf_returns': returns,
+                    'pf_positions': positions,
+                    'pf_transactions': transactions,
+                    'pf_gross_lev': gross_lev,
+                }
+            except Exception as e:
+                print(f"Warning: failed to extract PyFolio items: {e}")
+
+        self.results[result_key] = {**summary, **pf_payload, 'cerebro': self.cerebro, 'strategy': strategy}
         self._last_run_summary = summary
         return summary
 
@@ -258,6 +279,11 @@ class BacktestEngine:
         cerebro.addanalyzer(bt.analyzers.DrawDown, _name='drawdown')
         cerebro.addanalyzer(bt.analyzers.Returns, _name='returns')
         cerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='trades')
+        if self.enable_pyfolio:
+            try:
+                cerebro.addanalyzer(bt.analyzers.PyFolio, _name='pyfolio')
+            except Exception as e:
+                print(f"Warning: failed to add PyFolio analyzer: {e}")
         
         # Run backtest
         results = cerebro.run()
@@ -290,8 +316,23 @@ class BacktestEngine:
             'trade_analysis': trade_analysis,
             'strategy_performance': strategy.get_performance_summary(),
             'cerebro': cerebro,
-            'strategy': strategy
+            'strategy': strategy,
+            'has_pyfolio': False,
         }
+
+        # If available, extract PyFolio items
+        if self.enable_pyfolio and hasattr(strategy.analyzers, 'pyfolio'):
+            try:
+                returns, positions, transactions, gross_lev = strategy.analyzers.pyfolio.get_pf_items()
+                backtest_results.update({
+                    'pf_returns': returns,
+                    'pf_positions': positions,
+                    'pf_transactions': transactions,
+                    'pf_gross_lev': gross_lev,
+                    'has_pyfolio': True,
+                })
+            except Exception as e:
+                print(f"Warning: failed to extract PyFolio items: {e}")
         
         # Store results
         key = f"{strategy_class.__name__}_{symbol}_{start_date}_{end_date}"
@@ -301,6 +342,42 @@ class BacktestEngine:
               f"Return: {total_return:.2%}")
         
         return backtest_results
+
+    def create_pyfolio_tearsheet(self, result_key: str,
+                                 live_start_date: Optional[str] = None,
+                                 round_trips: bool = True) -> None:
+        """Create a PyFolio full tear sheet from stored analyzer items.
+
+        Args:
+            result_key: Key under which the backtest results were stored.
+            live_start_date: Optional live start date (e.g., '2005-05-01').
+            round_trips: Whether to compute and display round-trip metrics.
+        """
+        if result_key not in self.results:
+            raise ValueError(f"Result key {result_key} not found")
+
+        result = self.results[result_key]
+        if not result.get('has_pyfolio'):
+            raise RuntimeError("PyFolio data not available for this result. Enable PyFolio and re-run the backtest.")
+
+        try:
+            import pyfolio as pf  # type: ignore
+        except Exception as e:
+            raise ImportError("PyFolio is not installed. Please install 'pyfolio' to use this feature.") from e
+
+        returns = result['pf_returns']
+        positions = result.get('pf_positions')
+        transactions = result.get('pf_transactions')
+        gross_lev = result.get('pf_gross_lev')
+
+        pf.create_full_tear_sheet(
+            returns,
+            positions=positions,
+            transactions=transactions,
+            gross_lev=gross_lev,
+            live_start_date=live_start_date,
+            round_trips=round_trips,
+        )
     
     def run_parameter_optimization(self,
                                  strategy_class: Type[BaseStrategy],

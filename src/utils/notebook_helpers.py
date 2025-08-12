@@ -336,3 +336,20 @@ def quick_strategy_test(strategy_class, symbol: str, start_date: str, end_date: 
     except Exception as e:
         print(f"❌ Test failed: {e}")
         return None
+
+
+def render_pyfolio_tearsheet(engine, result_key: str,
+                             live_start_date: Optional[str] = None,
+                             round_trips: bool = True) -> None:
+    """Render a PyFolio full tear sheet for a stored backtest result.
+
+    This is a thin wrapper around the engine's `create_pyfolio_tearsheet`.
+    """
+    try:
+        engine.create_pyfolio_tearsheet(
+            result_key=result_key,
+            live_start_date=live_start_date,
+            round_trips=round_trips,
+        )
+    except Exception as e:
+        print(f"❌ Unable to render PyFolio tear sheet: {e}")

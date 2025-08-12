@@ -1,0 +1,18 @@
+# SMA Crossover Strategy Configuration
+backtesting:
+  initial_cash: 100000.0
+  commission: 0.001
+  output_dir: "results"
+  save_results: true
+
+data:
+  symbols: ['AAPL', 'MSFT', 'GOOGL']
+  start_date: '2022-01-01'
+  end_date: '2023-12-31'
+
+strategy:
+  name: sma_crossover
+  parameters:
+    fast_period: 10
+    slow_period: 30
+    printlog: false

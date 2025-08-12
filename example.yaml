@@ -9,6 +9,7 @@ backtesting:
   output_dir: "results"
   save_results: true
   data_cache_dir: "data/cache"
+  enable_pyfolio: true
 
 # =============================================================================
 # DATA SETTINGS
@@ -65,6 +66,11 @@ analysis:
   save_raw_data: true        # save raw input data per symbol
   raw_data_format: csv       # csv | parquet
   # raw_data_dir: analysis/raw_data  # optional override
+
+  # PyFolio reporting options (used when backtesting.enable_pyfolio is true)
+  pyfolio:
+    live_start_date: '2022-06-01'  # optional; set to null to disable
+    round_trips: true
 
 # =============================================================================
 # RISK MANAGEMENT
