@@ -7,7 +7,7 @@ set -e
 
 # Default values
 DEFAULT_CONFIG="config/config.yaml"
-PYTHON_SCRIPT="examples/run_backtest.py"
+PYTHON_SCRIPT="src/utils/run_backtest.py"
 
 # Colors for output
 RED='\033[0;31m'
