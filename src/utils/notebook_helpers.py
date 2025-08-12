@@ -44,7 +44,7 @@ def setup_notebook_environment(style: str = 'seaborn-v0_8', figsize: tuple = (12
     pd.set_option('display.width', 1000)
     pd.set_option('display.precision', 4)
     
-    print("✅ Notebook environment configured successfully!")
+    print("Notebook environment configured successfully!")
     print(f"   - Plotting style: {style}")
     print(f"   - Default figure size: {figsize}")
     print(f"   - Pandas display options optimized")
@@ -59,9 +59,9 @@ def add_src_to_path():
     
     if src_path not in sys.path:
         sys.path.insert(0, src_path)
-        print(f"✅ Added {src_path} to Python path")
+        print(f"Added {src_path} to Python path")
     else:
-        print(f"✅ {src_path} already in Python path")
+        print(f"{src_path} already in Python path")
 
 
 def quick_data_preview(data: pd.DataFrame, symbol: str = "", max_rows: int = 10):
@@ -73,7 +73,7 @@ def quick_data_preview(data: pd.DataFrame, symbol: str = "", max_rows: int = 10)
         symbol: Symbol name for display
         max_rows: Maximum rows to display
     """
-    print(f"📊 Data Preview: {symbol}" if symbol else "📊 Data Preview")
+    print(f"Data Preview: {symbol}" if symbol else "Data Preview")
     print("=" * 60)
     
     # Basic info
@@ -92,10 +92,10 @@ def quick_data_preview(data: pd.DataFrame, symbol: str = "", max_rows: int = 10)
     # Missing data check
     missing_data = data.isnull().sum()
     if missing_data.sum() > 0:
-        print(f"\n⚠️  Missing data:")
+        print(f"\nMissing data:")
         print(missing_data[missing_data > 0])
     else:
-        print(f"\n✅ No missing data found")
+        print(f"\nNo missing data found")
 
 
 def plot_price_volume(data: pd.DataFrame, symbol: str = "", figsize: tuple = (14, 8)):
@@ -190,20 +190,20 @@ def create_experiment_summary(results_dict: Dict[str, Dict[str, Any]],
         experiment_name: Name of the experiment
     """
     print("=" * 80)
-    print(f"🧪 EXPERIMENT SUMMARY: {experiment_name.upper()}")
+    print(f"EXPERIMENT SUMMARY: {experiment_name.upper()}")
     print("=" * 80)
     
     # Basic statistics
     total_strategies = len(results_dict)
     successful_strategies = len([r for r in results_dict.values() if 'final_value' in r])
     
-    print(f"\n📈 EXPERIMENT OVERVIEW:")
+    print(f"\nEXPERIMENT OVERVIEW:")
     print(f"   Total Strategies Tested: {total_strategies}")
     print(f"   Successful Runs: {successful_strategies}")
     print(f"   Success Rate: {successful_strategies/total_strategies*100:.1f}%")
     
     if successful_strategies == 0:
-        print("\n❌ No successful strategy runs found!")
+        print("\nNo successful strategy runs found!")
         return
     
     # Performance analysis
@@ -211,7 +211,7 @@ def create_experiment_summary(results_dict: Dict[str, Dict[str, Any]],
     sharpe_ratios = [r.get('sharpe_ratio', 0) for r in results_dict.values()]
     drawdowns = [r.get('max_drawdown', 0) for r in results_dict.values()]
     
-    print(f"\n📊 PERFORMANCE STATISTICS:")
+    print(f"\nPERFORMANCE STATISTICS:")
     print(f"   Returns Range: {min(returns):.2%} to {max(returns):.2%}")
     print(f"   Average Return: {np.mean(returns):.2%}")
     print(f"   Sharpe Ratio Range: {min(sharpe_ratios):.3f} to {max(sharpe_ratios):.3f}")
@@ -222,21 +222,21 @@ def create_experiment_summary(results_dict: Dict[str, Dict[str, Any]],
     best_return = max(results_dict.items(), key=lambda x: x[1].get('total_return', -float('inf')))
     best_sharpe = max(results_dict.items(), key=lambda x: x[1].get('sharpe_ratio', -float('inf')))
     
-    print(f"\n🏆 TOP PERFORMERS:")
+    print(f"\nTOP PERFORMERS:")
     print(f"   Best Return: {best_return[0]} ({best_return[1].get('total_return', 0):.2%})")
     print(f"   Best Sharpe: {best_sharpe[0]} ({best_sharpe[1].get('sharpe_ratio', 0):.3f})")
     
     # Recommendations
-    print(f"\n💡 RECOMMENDATIONS:")
+    print(f"\nRECOMMENDATIONS:")
     if np.mean(sharpe_ratios) > 1.0:
-        print("   ✅ Overall strategy performance is good (Sharpe > 1.0)")
+        print("   Overall strategy performance is good (Sharpe > 1.0)")
     elif np.mean(sharpe_ratios) > 0.5:
-        print("   ⚠️  Strategy performance is moderate (Sharpe 0.5-1.0)")
+        print("   Strategy performance is moderate (Sharpe 0.5-1.0)")
     else:
-        print("   ❌ Strategy performance needs improvement (Sharpe < 0.5)")
+        print("   Strategy performance needs improvement (Sharpe < 0.5)")
     
     if np.mean(drawdowns) < -0.1:
-        print("   ⚠️  High drawdowns detected - consider risk management")
+        print("   High drawdowns detected - consider risk management")
     
     print("\n" + "=" * 80)
 
@@ -281,7 +281,7 @@ def export_results_to_csv(results_dict: Dict[str, Dict[str, Any]],
     summary_path = os.path.join(output_dir, f"{filename_prefix}_summary.csv")
     summary_df.to_csv(summary_path, index=False)
     
-    print(f"✅ Results exported successfully!")
+    print(f"Results exported successfully!")
     print(f"   Detailed results: {detailed_path}")
     print(f"   Summary: {summary_path}")
     
@@ -306,7 +306,7 @@ def quick_strategy_test(strategy_class, symbol: str, start_date: str, end_date: 
     """
     from backtesting.engine import BacktestEngine
     
-    print(f"🚀 Quick testing {strategy_class.__name__} on {symbol}...")
+    print(f"Quick testing {strategy_class.__name__} on {symbol}...")
     
     # Initialize engine
     engine = BacktestEngine(
@@ -325,7 +325,7 @@ def quick_strategy_test(strategy_class, symbol: str, start_date: str, end_date: 
         )
         
         # Display quick summary
-        print(f"✅ Test completed successfully!")
+        print(f"Test completed successfully!")
         print(f"   Final Value: ${results['final_value']:,.2f}")
         print(f"   Total Return: {results['total_return']:.2%}")
         print(f"   Sharpe Ratio: {results['sharpe_ratio']:.3f}")
@@ -334,7 +334,7 @@ def quick_strategy_test(strategy_class, symbol: str, start_date: str, end_date: 
         return results
         
     except Exception as e:
-        print(f"❌ Test failed: {e}")
+        print(f"Test failed: {e}")
         return None
 
 
@@ -352,4 +352,4 @@ def render_pyfolio_tearsheet(engine, result_key: str,
             round_trips=round_trips,
         )
     except Exception as e:
-        print(f"❌ Unable to render PyFolio tear sheet: {e}")
+        print(f"Unable to render PyFolio tear sheet: {e}")
