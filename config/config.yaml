@@ -1,0 +1,45 @@
+# Configuration file for my-quant-journal
+# Default parameters and settings
+
+# Backtesting Engine Settings
+backtesting:
+  initial_cash: 100000.0
+  commission: 0.001
+  output_dir: "results"
+  data_cache_dir: "data/cache"
+
+# Data Settings
+data:
+  default_interval: "1d"
+  cache_enabled: true
+  validation:
+    max_missing_data_pct: 0.1
+    min_price: 0.01
+
+# Strategy Default Parameters
+strategies:
+  sma_crossover:
+    fast_period: 10
+    slow_period: 30
+    printlog: false
+  
+  # Add more strategies here as they are implemented
+
+# Performance Analysis Settings
+analysis:
+  output_dir: "analysis"
+  save_reports: true
+  save_charts: true
+  chart_dpi: 300
+
+# Risk Management
+risk:
+  max_position_size: 0.1  # 10% of portfolio
+  stop_loss_pct: 0.05     # 5% stop loss
+  take_profit_pct: 0.15   # 15% take profit
+
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/backtest.log"
+  console: true
