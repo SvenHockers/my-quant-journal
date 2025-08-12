@@ -1,0 +1,110 @@
+# Example Configuration File for my-quant-journal
+
+# =============================================================================
+# BACKTESTING ENGINE SETTINGS
+# =============================================================================
+backtesting:
+  initial_cash: 100000.0
+  commission: 0.001
+  output_dir: "results"
+  save_results: true
+  data_cache_dir: "data/cache"
+
+# =============================================================================
+# DATA SETTINGS
+# =============================================================================
+data:
+  symbols: ['AAPL', 'MSFT', 'GOOGL']
+  start_date: '2022-01-01'
+  end_date: '2023-12-31'
+  interval: "1d"
+  cache_enabled: true
+  validation:
+    max_missing_data_pct: 0.1
+    min_price: 0.01
+
+# =============================================================================
+# STRATEGY CONFIGURATION
+# =============================================================================
+strategy:
+  name: "regime_aware"
+  parameters:
+    # =================================================================
+    # REGIME-AWARE STRATEGY PARAMETERS
+    # =================================================================
+    hazard_rate: 0.01
+    change_point_threshold: 0.5
+    
+    max_window_length: 252
+    risk_aversion: 2.0
+    
+    turnover_penalty: 0.001
+    min_weight: 0.0
+    
+    max_weight: 0.3
+    rebalance_frequency: 5
+    
+    # =================================================================
+    # SMA CROSSOVER STRATEGY PARAMETERS
+    # =================================================================
+    fast_period: 10
+    slow_period: 30
+    
+    printlog: false
+
+# =============================================================================
+# ANALYSIS SETTINGS
+# =============================================================================
+analysis:
+  save_charts: true
+  save_reports: true
+  
+  chart_dpi: 300
+  plot_style: candle  # options: bar, candle, line
+  output_dir: "analysis"
+  save_raw_data: true        # save raw input data per symbol
+  raw_data_format: csv       # csv | parquet
+  # raw_data_dir: analysis/raw_data  # optional override
+
+# =============================================================================
+# RISK MANAGEMENT
+# =============================================================================
+risk:
+  max_position_size: 0.1
+  stop_loss_pct: 0.05
+  take_profit_pct: 0.15
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+logging:
+  level: "INFO"
+  file: "logs/backtest.log"
+  console: true
+
+# =============================================================================
+# EXAMPLE CONFIGURATIONS FOR DIFFERENT STRATEGIES
+# =============================================================================
+
+# Example 1: Fancy AI
+# strategy:
+#   name: "regime_aware"
+#   parameters:
+#     hazard_rate: 0.005          # Lower sensitivity
+#     change_point_threshold: 0.7 # Higher threshold
+#     risk_aversion: 3.0          # More conservative
+#     max_weight: 0.2             # Lower max weight per asset
+
+# Example 2: EMA Crossover Strategy
+# strategy:
+#   name: "sma_crossover"
+#   parameters:
+#     fast_period: 5              # Very fast signal
+#     slow_period: 20             # Shorter slow period
+#     printlog: true              # Detailed logging
+
+# Example 3: Multi-Asset Portfolio
+# data:
+#   symbols: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX']
+#   start_date: '2020-01-01'
+#   end_date: '2024-01-01'
