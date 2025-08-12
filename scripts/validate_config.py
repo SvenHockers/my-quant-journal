@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
 """
-Config validator for my-quant-journal.
+Config validator
 
-Validates YAML config files, discovers available strategies dynamically,
+Validates yaml config files, discovers available strategies dynamically,
 and checks that provided strategy parameters match the selected strategy's
-declared Backtrader params.
-
-Usage:
-  python scripts/validate_config.py validate --config path/to/config.yaml [--strict-params]
-  python scripts/validate_config.py list-strategies
+declared backtrader params
 """
 
 import sys
-import os
 import argparse
 import yaml
 import inspect
